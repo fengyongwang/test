@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="com.mmal.mapper.UserMapper" >
+
+    <resultMap id="user" type="com.mmal.po.data.User">
+        <id property="uid" column="uid"/>
+        <result property="uname" column="uname"/>
+        <result property="upwd" column="upwd"/>
+        <result property="state" column="state"/>
+        <result property="sex" column="sex"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTime"/>
+    </resultMap>
+
+    <sql id="user_column">
+        uid,uname,upwd,state,sex,createTime,updateTime
+    </sql>
+
+
+    <select id="queryUserById" resultMap="user" parameterType="java.util.List">
+        select
+        <include refid="user_column"/>
+        from user where uid=#{id}
+    </select>
+    
+
+    <select id="queryUserByRequest" resultMap="user" parameterType="com.mmal.po.request.UserPoRequest">
+        select
+        <include refid="user_column"/>
+        from user
+            <where>
+                <if test="uid !=null"> and uid=#{uid}</if>
+                <if test="uname !=null"> and uname=#{uname}</if>
+                <if test="upwd !=null"> and upwd=#{upwd}</if>
+                <if test="ids !=null"> and uid in
+                    <foreach collection="list" item="ids" index="index" separator="," close=")" open="(">
+                        #{ids}
+                    </foreach>
+                </if>
+                and state!=0
+            </where>
+
+    </select>
+
+
+    <select id="queryAllUserCount" parameterType="com.mmal.po.request.UserPoRequest">
+        select count(1) from user
+        <where>
+            <if test="uid !=null">and uid =#{uid}</if>
+            <if test="uname !=null">and uname=#{uname}</if>
+            <if test="upwd!=null">and upwd=#{upwd}</if>
+            <if test="ids!=null">and uid in
+                <foreach collection="list" item="ids" open="(" close=")" separator="," index="index">
+                    #{ids}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertUser" parameterType="com.mmal.po.request.UserPoRequest">
+        insert into user values(null,#{uname},#{upwd},#{state},#{sex},#{createTime},#{updateTime})
+
+    </insert>
+
+
+</mapper>
